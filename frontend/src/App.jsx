@@ -1,19 +1,38 @@
-import { IconExclamationCircle, IconUpload, IconX } from '@tabler/icons-react';
+import { IconUpload } from '@tabler/icons-react';
 import './styles/app.css';
 import useUpload from './hooks/useUpload';
 import { useEffect, useState } from 'react';
 import useQuery from './hooks/useQuery';
+import Toast from './components/Toast';
+import Loader from './components/Loader';
 
 export default function App() {
-  const { handleUpload, isLoading, isSuccess, error } = useUpload();
-  const { data, isLoading: isLoadingData, error: errorData } = useQuery();
-  const [isOpen, setIsOpen] = useState(false);
+  const {
+    handleUpload,
+    isLoading,
+    isSuccess,
+    error: errorUpload,
+  } = useUpload(() => setRefetch((prev) => prev + 1));
+  const [refetch, setRefetch] = useState(0);
+  const {
+    data,
+    isLoading: isLoadingData,
+    error: errorData,
+  } = useQuery(refetch);
+  const [isOpenToastError, setIsOpenToastError] = useState(false);
+  const [isOpenToastSuccess, setIsOpenToastSuccess] = useState(false);
 
   useEffect(() => {
     (() => {
-      if (error) setIsOpen(true);
+      if (errorUpload) setIsOpenToastError(true);
     })();
-  }, [error]);
+  }, [errorUpload]);
+
+  useEffect(() => {
+    (() => {
+      if (isSuccess) setIsOpenToastSuccess(true);
+    })();
+  }, [isSuccess]);
 
   return (
     <div className="app">
@@ -27,7 +46,7 @@ export default function App() {
           </label>
         ) : (
           <label htmlFor="file-input" className="upload-btn">
-            <div className="loader"></div>
+            <Loader />
           </label>
         )}
 
@@ -43,7 +62,7 @@ export default function App() {
       <section className="images">
         <h1>Your Feed</h1>
 
-        {isLoadingData && <div className="loader"></div>}
+        {isLoadingData && <Loader />}
 
         {!isLoadingData && data.length === 0 && <p>No images found</p>}
 
@@ -58,43 +77,28 @@ export default function App() {
         )}
       </section>
 
-      {isOpen && error && (
-        <div className="error-card">
-          <div className="error-content">
-            <IconExclamationCircle size="1.5rem" />
-            <p>{error}</p>
-          </div>
-
-          <button onClick={() => setIsOpen(false)} className="close">
-            <IconX size="1rem" />
-          </button>
-        </div>
+      {isOpenToastError && errorUpload && (
+        <Toast
+          text={errorUpload}
+          isError={true}
+          close={() => setIsOpenToastError(false)}
+        />
       )}
 
       {errorData && (
-        <div className="error-card">
-          <div className="error-content">
-            <IconExclamationCircle size="1.5rem" />
-            <p>{errorData}</p>
-          </div>
-
-          <button onClick={() => setIsOpen(false)} className="close">
-            <IconX size="1rem" />
-          </button>
-        </div>
+        <Toast
+          text={errorData}
+          isError={true}
+          close={() => setIsOpenToastError(false)}
+        />
       )}
 
-      {isSuccess && (
-        <div className="error-card success-card">
-          <div className="error-content">
-            <IconExclamationCircle size="1.5rem" />
-            <p>Succesful upload</p>
-          </div>
-
-          <button onClick={() => setIsOpen(false)} className="close">
-            <IconX size="1rem" />
-          </button>
-        </div>
+      {isSuccess && isOpenToastSuccess && (
+        <Toast
+          text="Succesful upload"
+          isError={false}
+          close={() => setIsOpenToastSuccess(false)}
+        />
       )}
     </div>
   );

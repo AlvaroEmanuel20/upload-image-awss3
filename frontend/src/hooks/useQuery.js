@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios';
 import { useEffect, useState } from 'react';
 
-export default function useQuery() {
+export default function useQuery(refetch) {
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -22,7 +22,7 @@ export default function useQuery() {
         setIsLoading(false);
       }
     })();
-  }, []);
+  }, [refetch]);
 
   return { data, isLoading, error };
 }

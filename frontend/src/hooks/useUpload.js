@@ -3,7 +3,7 @@ import axios, { AxiosError } from 'axios';
 import UploadError from '../lib/UploadError';
 import validateUpload from '../lib/validateUpload';
 
-export default function useUpload() {
+export default function useUpload(refetchHandle) {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -22,6 +22,10 @@ export default function useUpload() {
       await axios.post(import.meta.env.VITE_API_URL, formData);
       setIsLoading(false);
       setIsSuccess(true);
+      setTimeout(() => {
+        setIsSuccess(false);
+        refetchHandle();
+      }, 2000);
     } catch (error) {
       if (error instanceof UploadError) {
         setError(error.message);

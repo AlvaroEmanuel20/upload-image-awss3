@@ -50,7 +50,9 @@ async function getAllObjectsKeys() {
     })
   );
 
-  return Contents.map((content) => content.Key);
+  return Contents.sort(
+    (a, b) => new Date(b.LastModified) - new Date(a.LastModified)
+  ).map((content) => content.Key);
 }
 
 async function getPresignedUrls() {
@@ -68,7 +70,6 @@ async function getPresignedUrls() {
 
     return { presignedUrls };
   } catch (error) {
-    console.log(error);
     return { error };
   }
 }

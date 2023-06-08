@@ -1,0 +1,30 @@
+:root {
+  --blue: #03001c;
+  --primary: #301e67;
+  --primary-light: #3a237e;
+  --white: #fff;
+  --radius: 6px;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  border: 0;
+  background: none;
+  outline: none;
+  font-size: 1rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+body,
+html {
+  overflow-x: hidden;
+  background: var(--blue);
+  color: var(--white);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}

@@ -14,11 +14,15 @@ app.get('/', (req, res) => {
 app.post('/', uploadFile, async (req, res) => {
   try {
     if (!req.file)
-      res.status(400).json({ message: 'Image is required', status: 400 });
+      return res
+        .status(400)
+        .json({ message: 'Image is required', status: 400 });
 
     const { key, error } = await uploadToS3(req.file);
     if (error)
-      res.status(500).json({ message: 'Error to upload image', status: 500 });
+      return res
+        .status(500)
+        .json({ message: 'Error to upload image', status: 500 });
 
     res.status(201).json({ uploaded: true, imageName: key });
   } catch (error) {
@@ -30,7 +34,9 @@ app.get('/images', async (req, res) => {
   try {
     const { presignedUrls, error } = await getPresignedUrls();
     if (error)
-      res.status(500).json({ message: 'Error to get images', status: 500 });
+      return res
+        .status(500)
+        .json({ message: 'Error to get images', status: 500 });
 
     res.status(201).json(presignedUrls);
   } catch (error) {
